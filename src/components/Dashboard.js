@@ -97,11 +97,11 @@ class Dashboard extends Component {
       )
       .map(panel => (
         // .map creates a new array, using the data array
-      <Panel
+        <Panel
         key={panel.id}
         label={panel.label}
-        value={panel.value}
-        onSelect={event => this.selectPanel(panel.id)}
+        value={panel.getValue(this.state)}
+        onSelect={() => this.selectPanel(panel.id)}
         />
       ))
 
