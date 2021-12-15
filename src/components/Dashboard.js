@@ -9,8 +9,10 @@ import {
   getTotalInterviews,
   getLeastPopularTimeSlot,
   getMostPopularDay,
-  getInterviewsPerDay
+  getInterviewsPerDay,
  } from "helpers/selectors";
+
+import { setInterview } from "helpers/reducers";
 
  const data = [
   {
@@ -64,6 +66,19 @@ class Dashboard extends Component {
       });
     });
     
+    this.socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
+    // onMessage event handler to update State
+    this.socket.onmessage = event => {
+      const data = JSON.parse(event.data);
+    
+      if (typeof data === "object" && data.type === "SET_INTERVIEW") {
+        this.setState(previousState =>
+          setInterview(previousState, data.id, data.interview)
+        );
+      }
+    };
+
   }
 
   // compare to existing state, if different, write it to localStorage
@@ -108,6 +123,11 @@ class Dashboard extends Component {
 
     return <main className={dashboardClasses}>{panels}</main>;
   }
+
+  componentWillUnmount() {
+    this.socket.close();
+  }
+
 }
 
 export default Dashboard;
